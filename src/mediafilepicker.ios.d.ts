@@ -12,7 +12,7 @@ export declare class Mediafilepicker extends Common implements CommonFilePicker 
     startFilePicker(params: MediaFilepickerOptions): void;
     getFiles(assetArray: NSArray<any>): void;
     handleJob(assetArray: NSArray<any>): Promise<{}>;
-    copyImageFiles(rawData: PHAsset, fileName: string): Promise<{}>;
+    copyImageFiles(image: UIImage, fileName: string): Promise<{}>;
     copyVideoFiles(url: NSURL, fileName: any): Promise<{}>;
 }
 export declare let invokeOnRunLoop: (func: any) => void;

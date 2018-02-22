@@ -1,7 +1,6 @@
 import {Common, CommonFilePicker, MediaFilepickerOptions} from './mediafilepicker.common';
-import * as utils from "tns-core-modules/utils/utils";
 import * as fs from "tns-core-modules/file-system/file-system"
-import * as frame from 'tns-core-modules/ui/frame';
+import {LoadingIndicator} from "nativescript-loading-indicator";
 
 declare var GMImagePickerController, GMImagePickerControllerDelegate, NSDocumentDirectory, NSUserDomainMask,
     PHAssetMediaTypeImage, PHAssetMediaTypeVideo;
@@ -30,13 +29,19 @@ export class MediafilepickerDelegate extends NSObject {
     public assetsPickerControllerDidFinishPickingAssets(picker, assetArray: NSArray<any>) {
         invokeOnRunLoop(() => {
 
-            console.log('** picked 1');
+            let loader = new LoadingIndicator();
+            let options = {
+                message: 'Loading...',
+                progress: 0.65,
+            };
+            loader.show(options);
 
             // let app = utils.ios.getter(UIApplication, UIApplication.sharedApplication);
             // app.keyWindow.rootViewController.dismissViewControllerAnimatedCompletion(true, null);
             // picker.presentingViewController.dismissViewControllerAnimatedCompletion(true, null);
-            picker.presentingViewController.dismissViewControllerAnimatedCompletion(true, null);
-            this._owner.getFiles(assetArray);
+            picker.presentingViewController.dismissViewControllerAnimatedCompletion(true, () => {
+                this._owner.getFiles(assetArray, loader);
+            });
         });
     }
 }
@@ -97,21 +102,21 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
 
                 let appWindow = UIApplication.sharedApplication.keyWindow;
                 // let page = frame.topmost().ios.controller;
-                appWindow.rootViewController.presentViewControllerAnimatedCompletion(picker, true, function () {});
+                appWindow.rootViewController.presentViewControllerAnimatedCompletion(picker, true, function () {
+                });
 
             });
         });
     }
 
-    public getFiles(assetArray: NSArray<any>) {
+    public getFiles(assetArray: NSArray<any>, loader: any) {
 
         let t = this;
 
         t.handleJob(assetArray).then(res => {
-
             setTimeout(() => {
-
-                t.output = t.output.replace(/,+$/, '')
+                loader.hide();
+                t.output = t.output.replace(/,+$/, '');
                 t.notify({
                     eventName: "getFiles",
                     object: t,
@@ -120,6 +125,7 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
             }, 200)
 
         }).catch(er => {
+            loader.hide();
 
             t.notify({
                 eventName: "error",
@@ -144,20 +150,25 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
 
                     let _uriRequestOptions = PHImageRequestOptions.alloc().init();
                     _uriRequestOptions.synchronous = true;
+                    _uriRequestOptions.networkAccessAllowed = true;
+                    _uriRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat;
 
-                    PHImageManager.defaultManager().requestImageDataForAssetOptionsResultHandler(data, _uriRequestOptions, (data, uti, orientation, info) => {
+                    PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(
+                        data, PHImageManagerMaximumSize, PHImageContentMode.Default, _uriRequestOptions, (image, info) => {
 
-                        let uri = info.objectForKey("PHImageFileURLKey");
-                        let newUri = uri.toString();
-                        let fileName = newUri.replace(/^.*[\\\/]/, '');
+                            let uri = info.objectForKey("PHImageFileURLKey");
+                            let newUri = uri.toString();
+                            let fileName = newUri.replace(/^.*[\\\/]/, '');
 
-                        t.copyImageFiles(rawData, fileName);
+                            t.copyImageFiles(image, fileName);
 
-                    });
+                        });
 
                 } else if (data.mediaType == PHAssetMediaType.Video) {
 
-                    let uriVideoRequestOptions = PHVideoRequestOptions.alloc().init()
+                    let uriVideoRequestOptions = PHVideoRequestOptions.alloc().init();
+                    uriVideoRequestOptions.networkAccessAllowed = true;
+
                     PHImageManager.defaultManager().requestAVAssetForVideoOptionsResultHandler(data, uriVideoRequestOptions, (data, audioMix, info) => {
 
                         let urlAsset = data as AVURLAsset;
@@ -178,7 +189,7 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
 
     }
 
-    public copyImageFiles(rawData: PHAsset, fileName: string) {
+    public copyImageFiles(image: UIImage, fileName: string) {
 
         let t = this;
 
@@ -187,29 +198,30 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
             let docuPath = fs.knownFolders.documents();
             let targetImgeURL = docuPath.path + "/filepicker/" + fileName;
 
-            let phManager = PHImageManager.defaultManager()
-            let options = PHImageRequestOptions.alloc().init();
-            options.synchronous = true; // do it if you want things running in background thread
+            let newData: NSData = UIImageJPEGRepresentation(image, 100);
 
-            phManager.requestImageDataForAssetOptionsResultHandler(rawData, options, function (imageData, dataUTI, orientation, info) {
+            if (newData) {
 
-                let newData: NSData = imageData
+                try {
+                    newData.writeToFileAtomically(targetImgeURL, true);
+                    t.output = targetImgeURL.toString() + "," + t.output;
+                    resolve(targetImgeURL);
 
-                if (newData) {
+                } catch (e) {
 
-                    try {
-                        newData.writeToFileAtomically(targetImgeURL, true);
-                        t.output = targetImgeURL.toString() + "," + t.output;
-                        resolve(targetImgeURL);
-
-                    } catch (e) {
-
-                        reject(e);
-                    }
-
+                    reject(e);
                 }
-            })
-        })
+
+            }
+
+
+            //
+            // let img = imageSource.fromNativeSource(image);
+            // const saved = img.saveToFile(targetImgeURL, "jpg");
+            // console.log('save image to ' + targetImgeURL + ' -- ' + saved);
+            // t.output = targetImgeURL.toString() + "," + t.output;
+            // resolve(targetImgeURL);
+        });
     }
 
     public copyVideoFiles(url: NSURL, fileName) {
