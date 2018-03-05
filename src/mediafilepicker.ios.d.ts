@@ -10,7 +10,7 @@ export declare class Mediafilepicker extends Common implements CommonFilePicker 
     output: string;
     private delegate;
     startFilePicker(params: MediaFilepickerOptions): void;
-    getFiles(assetArray: NSArray<any>): void;
+    getFiles(assetArray: NSArray<any>, loader: any): void;
     handleJob(assetArray: NSArray<any>): Promise<{}>;
     copyImageFiles(image: UIImage, fileName: string): Promise<{}>;
     copyVideoFiles(url: NSURL, fileName: any): Promise<{}>;

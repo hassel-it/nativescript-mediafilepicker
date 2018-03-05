@@ -12,7 +12,8 @@
     "nativescript-mediafilepicker": "../src",
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "^3.1.1"
+    "tns-core-modules": "^3.1.1",
+    "nativescript-loading-indicator": "^2.4.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "~3.1.3",

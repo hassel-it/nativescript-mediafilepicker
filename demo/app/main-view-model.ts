@@ -47,17 +47,17 @@ export class HelloWorldModel extends Observable {
                     // you can do anything here
 
 
-                    if (app.ios) {
-
-                        let folder = fs.knownFolders.documents();
-                        let file = folder.getFolder("filepicker").getFile(fileName);
-
-                        if (fs.File.exists(file.path)) {
-                            folder.getFile("filepicker/" + fileName).remove()
-                        } else {
-                            console.log("not found")
-                        }
-                    }
+                    // if (app.ios) {
+                    //
+                    //     let folder = fs.knownFolders.documents();
+                    //     let file = folder.getFolder("filepicker").getFile(fileName);
+                    //
+                    //     if (fs.File.exists(file.path)) {
+                    //         folder.getFile("filepicker/" + fileName).remove()
+                    //     } else {
+                    //         console.log("not found")
+                    //     }
+                    // }
                 });
             } else {
                 console.log("There was some problem to select the file. Looks like user has cancel it.")

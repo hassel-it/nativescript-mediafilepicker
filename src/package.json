@@ -1,6 +1,6 @@
 {
   "name": "nativescript-mediafilepicker",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "NativeScript Media File Picker Plugin.",
   "main": "mediafilepicker",
   "typings": "index.d.ts",
@@ -56,7 +56,8 @@
     "url": "git+https://github.com/jibon57/nativescript-mediafilepicker"
   },
   "dependencies": {
-    "nativescript-permissions": "^1.2.3"
+    "nativescript-permissions": "^1.2.3",
+    "nativescript-loading-indicator": "^2.4.0"
   },
   "bootstrapper": "nativescript-plugin-seed"
 }

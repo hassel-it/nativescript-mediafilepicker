@@ -101,6 +101,14 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
                 }
 
                 let appWindow = UIApplication.sharedApplication.keyWindow;
+                picker.modalPresentationStyle = UIModalPresentationStyle.BlurOverFullScreen;
+                if (options.popOver) {
+                // let popPC = picker.popoverPresentationController;
+                // popPC.sourceView = appWindow.rootViewController.view;
+                // popPC.sourceRect = CGRectMake(CGRectGetMidX(appWindow.rootViewController.view.bounds), CGRectGetMidY(appWindow.rootViewController.view.bounds),0,0)
+                // popPC.permittedArrowDirections = UIPopoverArrowDirection.Any;
+                }
+
                 // let page = frame.topmost().ios.controller;
                 appWindow.rootViewController.presentViewControllerAnimatedCompletion(picker, true, function () {
                 });
