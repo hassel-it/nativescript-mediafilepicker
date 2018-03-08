@@ -63,7 +63,7 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
                 let options = params.ios;
 
                 this.delegate = MediafilepickerDelegate.initWithOwner(this);
-                let picker = GMImagePickerController.alloc().initWithAssetsDelegate(true, null, this.delegate);
+                let picker = GMImagePickerController.alloc().initWithAssetsDelegate(false, null, this.delegate);
 
                 //options
 
@@ -73,6 +73,7 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
                 options.confirmSingleSelection ? picker.confirmSingleSelection = true : picker.confirmSingleSelection = false;
                 options.showCameraButton ? picker.showCameraButton = true : picker.showCameraButton = false;
                 options.autoSelectCameraImages ? picker.autoSelectCameraImages = true : picker.autoSelectCameraImages = false;
+                options.startWithAssets ? picker.startWithAssets = true : picker.startWithAssets = false;
 
                 if (options.title) {
                     picker.title = options.title;
@@ -109,6 +110,7 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
                 // popPC.permittedArrowDirections = UIPopoverArrowDirection.Any;
                 }
 
+                picker.setupNavigationController();
                 // let page = frame.topmost().ios.controller;
                 appWindow.rootViewController.presentViewControllerAnimatedCompletion(picker, true, function () {
                 });

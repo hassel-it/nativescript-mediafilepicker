@@ -26,6 +26,7 @@ export class HelloWorldModel extends Observable {
                 allowsMultipleSelection: false,
                 title: "Album",
                 showCameraButton: false,
+                startWithAssets: true
             }
         };
         this.mediafilepicker = new Mediafilepicker();

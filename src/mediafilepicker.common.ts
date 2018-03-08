@@ -45,6 +45,7 @@ export interface MediaFilepickerOptions {
         confirmSingleSelectionPrompt?: string;
         showCameraButton?: boolean;
         autoSelectCameraImages?: boolean;
-        popOver?: boolean
+        popOver?: boolean;
+        startWithAssets?:boolean;
     }
 }

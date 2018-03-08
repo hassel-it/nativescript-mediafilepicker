@@ -1,1 +1,2 @@
-pod 'GMImagePicker', :git=>"https://github.com/nixplay/GMImagePicker"
+platform :ios, '9.0'
+pod 'GMImagePicker', :git=>"https://github.com/hassel-it/GMImagePicker", :branch => 'feature/video_upload'
