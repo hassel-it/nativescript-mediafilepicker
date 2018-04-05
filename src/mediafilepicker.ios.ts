@@ -241,10 +241,10 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
         return new Promise(function (resolve, reject) {
 
             let docuPath = fs.knownFolders.documents();
+            let targetVideoURL = docuPath.path + "/filepicker/" + fileName;
+            let targetURL = NSURL.fileURLWithPath(targetVideoURL);
 
-            let targetURL = NSURL.fileURLWithPath(docuPath.path + "/filepicker/" + fileName);
-
-            if (fs.File.exists(docuPath.path + "/filepicker/" + fileName)) {
+            if (fs.File.exists(targetVideoURL)) {
                 docuPath.getFile("filepicker/" + fileName).remove()
             }
 
@@ -252,8 +252,8 @@ export class Mediafilepicker extends Common implements CommonFilePicker {
                 let write = NSFileManager.defaultManager.copyItemAtURLToURLError(url, targetURL);
 
                 if (write) {
-                    t.output = targetURL.toString() + "," + t.output;
-                    resolve(t.output)
+                    t.output = targetVideoURL.toString() + "," + t.output;
+                    resolve(targetVideoURL)
                 } else {
                     reject("Not copied")
                 }
